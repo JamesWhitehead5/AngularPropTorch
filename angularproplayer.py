@@ -107,7 +107,7 @@ class PropagatePadded(AngularPropagator):
             pad_y = int(n_y * pad_factor / (2 + 2 * pad_factor))
             return source[:, pad_x:-pad_x, pad_y:-pad_y]
 
-    def foward(self, field):
+    def forward(self, field):
         assert field.size()[0] == self.nx and field.size()[1] == self.ny
         field = PropagatePadded._pad(field, pad_factor=self.pad_factor)
         field = self.propagator.prop(field)
