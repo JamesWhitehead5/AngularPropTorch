@@ -92,7 +92,7 @@ class PropagatePadded(AngularPropagator):
 
     @staticmethod
     def _pad(source, pad_factor=1.):
-        n_x, n_y = source.size()
+        *_, n_x, n_y = source.size()
         pad_x = int(n_x * pad_factor / 2)
         pad_y = int(n_y * pad_factor / 2)
         return torch.nn.functional._pad(input=source, pad=(pad_x, pad_x, pad_y, pad_y), mode='constant', value=0)
@@ -108,9 +108,8 @@ class PropagatePadded(AngularPropagator):
             return source[:, pad_x:-pad_x, pad_y:-pad_y]
 
     def forward(self, field):
-        assert field.size()[0] == self.nx and field.size()[1] == self.ny
         field = PropagatePadded._pad(field, pad_factor=self.pad_factor)
-        field = self.propagator.prop(field)
+        field = self.forward(field)
         field = PropagatePadded._unpad(field, pad_factor=self.pad_factor)
 
         return field
