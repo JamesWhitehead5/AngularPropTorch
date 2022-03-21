@@ -71,7 +71,7 @@ class AngularPropagator(torch.nn.Module):
         self.register_buffer("yy", yy)
 
     def forward(self, field):
-        assert field.size()[0] == self.nx and field.size()[1] == self.ny
+        assert field.size()[-1] == self.nx and field.size()[-2] == self.ny
 
         # fourier transform the input field
         u = torch.fft.fft2(field)
@@ -109,7 +109,7 @@ class PropagatePadded(AngularPropagator):
 
     def forward(self, field):
         field = PropagatePadded._pad(field, pad_factor=self.pad_factor)
-        field = self.forward(field)
+        field = AngularPropagator.forward(self, field)[0, ...]
         field = PropagatePadded._unpad(field, pad_factor=self.pad_factor)
 
         return field
